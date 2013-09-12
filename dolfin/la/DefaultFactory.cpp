@@ -26,6 +26,7 @@
 #include "PETScCuspFactory.h"
 #include "EpetraFactory.h"
 #include "STLFactory.h"
+#include "ViennaCLFactory.h"
 #include "DefaultFactory.h"
 
 using namespace dolfin;
@@ -129,6 +130,10 @@ GenericLinearAlgebraFactory& DefaultFactory::factory()
   else if (backend == "STL")
   {
     return STLFactory::instance();
+  }
+  else if (backend == "ViennaCL")
+  {
+    return ViennaCLFactory<>::instance();
   }
 
   // Fallback

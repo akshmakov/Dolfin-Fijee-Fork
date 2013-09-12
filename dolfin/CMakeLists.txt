@@ -269,6 +269,31 @@ if (DOLFIN_ENABLE_VTK AND VTK_FOUND)
   list(APPEND DOLFIN_EXTRA_TARGET_LINK_LIBRARIES ${DOLFIN_VTK_LIBRARIES})
 endif()
 
+# ViennaCL
+if (DOLFIN_ENABLE_VIENNACL AND VIENNACL_FOUND)
+  # has OpenMP 
+  if (OPENMP_FOUND)
+    list(APPEND DOLFIN_CXX_DEFINITIONS "-DVIENNACL_WITH_OPENMP")
+  endif()
+  list(APPEND DOLFIN_CXX_DEFINITIONS "-DHAS_VIENNACL"  "-DNDEBUG" )
+  list(APPEND DOLFIN_CXX_DEFINITIONS "${VIENNACL_DEFINITIONS}")
+  list(APPEND DOLFIN_DEP_SYSTEM_INCLUDE_DIRECTORIES ${VIENNACL_INCLUDE_DIRS})
+  list(APPEND DOLFIN_TARGET_LINK_LIBRARIES ${VIENNACL_LIBRARIES})
+
+  # Add necessary VIENNACL flags (usually related to floating point)
+  set(DOLFIN_CXX_FLAGS "${DOLFIN_CXX_FLAGS} ${VIENNACL_CXX_FLAGS_INIT}")
+
+  # Add LIBRARY
+  set(VIENNACL_LIBRARIES OpenCL)
+  # Loop over libs and get full path
+  foreach (lib ${VIENNACL_LIBRARIES})
+    find_library(VIENNACL_LIB_${lib} ${lib} HINTS ${VIENNACL_LIBRARY_DIRS})
+    if (VIENNACL_LIB_${lib})
+      list(APPEND DOLFIN_VIENNACL_LIBRARIES ${VIENNACL_LIB_${lib}})
+    endif()
+  endforeach()
+endif()
+
 #------------------------------------------------------------------------------
 # Set compiler flags, include directories and library dependencies
 

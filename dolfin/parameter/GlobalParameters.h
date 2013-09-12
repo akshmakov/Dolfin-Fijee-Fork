@@ -172,6 +172,9 @@ namespace dolfin
         default_backend = "Epetra";
         #endif
       #endif
+      #ifdef HAS_VIENNACL
+      allowed_backends.insert("ViennaCL");
+      #endif
       p.add("linear_algebra_backend",
             default_backend,
             allowed_backends);
