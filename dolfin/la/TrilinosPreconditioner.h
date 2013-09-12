@@ -100,6 +100,17 @@ namespace dolfin
     /// The vectors spanning the null space are copied.
     void set_nullspace(const VectorSpaceBasis& null_space);
 
+    /// Set the coordinates of the operator (matrix) rows and geometric
+    /// dimension d. This is can be used by required for certain
+    /// preconditioners, e.g. ML. The input for this function can be
+    /// generated using GenericDofMap::tabulate_all_dofs.
+    virtual void set_coordinates(const std::vector<double>& x, std::size_t dim)
+    {
+      dolfin_error("TrilinosPreconditioner.h",
+                   "set coordinates for preconditioner operator",
+                   "Not supported by current preconditioner type");
+    }
+
     /// Return preconditioner name
     std::string name() const;
 
@@ -111,6 +122,7 @@ namespace dolfin
 
     /// Default parameter values
     static Parameters default_parameters();
+
 
   private:
 
