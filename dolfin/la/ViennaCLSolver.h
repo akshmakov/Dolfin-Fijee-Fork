@@ -59,7 +59,7 @@ namespace dolfin
 
     /// Set solver parameters
     virtual 
-      void set() = 0;
+      void set(Parameters& ) = 0;
 
     /// Number of iteration
     virtual 
@@ -83,7 +83,7 @@ namespace dolfin
 
     /// Set solver parameters
     virtual 
-      void set() = 0;
+      void set(Parameters& ) = 0;
 
     /// Number of iteration
     virtual 
@@ -109,12 +109,11 @@ namespace dolfin
     
     /// Set solver parameters
     virtual 
-      void set() = 0;
+      void set(Parameters& ) = 0;
 
     /// Number of iteration
     virtual 
       std::size_t number_iteration() = 0;
-    
 
   protected:
     /// Underlying preconditioner strategy
@@ -128,7 +127,7 @@ namespace dolfin
   {
   public:
     /// Create Conjugate Gradient solver
-  ViennaCLSolverIterCG( std::string preconditioner );
+  ViennaCLSolverIterCG( std::string preconditioner ):ViennaCLSolverIteratif(preconditioner){};
     
     /// Destructor
     virtual
@@ -140,7 +139,7 @@ namespace dolfin
 
     /// Set solver parameters
     virtual 
-      void set(){};
+      void set(Parameters& );
 
     /// Number of iteration
     virtual 
@@ -151,7 +150,7 @@ namespace dolfin
 
   private:
     /// Solver tag
-    viennacl::linalg::cg_tag* _custom_tag;
+    boost::shared_ptr< viennacl::linalg::cg_tag > _custom_tag;
 
   };
   //-----------------------------------------------------------------------------
@@ -162,7 +161,7 @@ namespace dolfin
   {
   public:
     /// Create Stabilized Bi-CG solver
-  ViennaCLSolverIterBiCGStab( std::string preconditioner );
+  ViennaCLSolverIterBiCGStab( std::string preconditioner ):ViennaCLSolverIteratif(preconditioner){};
     
     /// Destructor
     virtual
@@ -174,7 +173,7 @@ namespace dolfin
 
     /// Set solver parameters
     virtual 
-      void set(){};
+      void set(Parameters& );
 
     /// Number of iteration
     virtual 
@@ -185,7 +184,7 @@ namespace dolfin
 
   private:
     /// Solver tag
-    viennacl::linalg::bicgstab_tag* _custom_tag;
+    boost::shared_ptr< viennacl::linalg::bicgstab_tag > _custom_tag;
   };
   //-----------------------------------------------------------------------------
  
@@ -195,7 +194,7 @@ namespace dolfin
   {
   public:
     /// Create Generalized Minimum Residual solver
-  ViennaCLSolverIterGMRES( std::string preconditioner );
+  ViennaCLSolverIterGMRES( std::string preconditioner ):ViennaCLSolverIteratif(preconditioner){};
     
     /// Destructor
     virtual
@@ -207,7 +206,7 @@ namespace dolfin
 
     /// Set solver parameters
     virtual 
-      void set(){};
+      void set(Parameters& );
 
     /// Number of iteration
     virtual 
@@ -218,7 +217,7 @@ namespace dolfin
 
   private:
     /// Solver tag
-    viennacl::linalg::gmres_tag* _custom_tag;
+    boost::shared_ptr< viennacl::linalg::gmres_tag > _custom_tag;
   };
 }
 //-----------------------------------------------------------------------------

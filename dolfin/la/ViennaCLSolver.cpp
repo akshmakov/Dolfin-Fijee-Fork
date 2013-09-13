@@ -22,6 +22,7 @@
 
 #ifdef HAS_VIENNACL
 
+#include "KrylovSolver.h"
 #include "ViennaCLSolver.h"
 #include "ViennaCLPreconditioner.h"
 
@@ -32,7 +33,7 @@ namespace dolfin
   //-----------------------------------------------------------------------------
   ViennaCLSolverIteratif::ViennaCLSolverIteratif( std::string preconditioner )
   {
-    // Set preconditioner
+   // Set preconditioner
     if ( preconditioner == "none" || preconditioner == "" )
       _preconditioner.reset( new ViennaCLPreconditionerNoPreconditioning(preconditioner) );
     else if ( preconditioner == "ilut" || preconditioner == "default" )
@@ -48,13 +49,14 @@ namespace dolfin
 		   "create ViennaCL preconditioner",
 		   "Unknown preconditioner type (\"%s\")", preconditioner.c_str());
   };
-  //-----------------------------------------------------------------------------
+ //-----------------------------------------------------------------------------
 
-  ViennaCLSolverIterCG::ViennaCLSolverIterCG( std::string preconditioner ): 
-    ViennaCLSolverIteratif(preconditioner),
-    _custom_tag(new viennacl::linalg::cg_tag( static_cast<double>(parameters("krylov_solver")["relative_tolerance"]),
-					      static_cast<int>(parameters("krylov_solver")["maximum_iterations"]) ))
-  {};
+  void ViennaCLSolverIterCG::set(Parameters& param)
+  {
+    // Set the solver tag
+    _custom_tag.reset(new viennacl::linalg::cg_tag( static_cast<double>(param["relative_tolerance"]),
+						    static_cast<int>(param["maximum_iterations"]) ));
+  };
   //-----------------------------------------------------------------------------
 
   ublas_vector   
@@ -62,14 +64,15 @@ namespace dolfin
   {
     return _preconditioner->solve(A, b, *this);
   };
-  //-----------------------------------------------------------------------------
+ //-----------------------------------------------------------------------------
 
-  ViennaCLSolverIterBiCGStab::ViennaCLSolverIterBiCGStab( std::string preconditioner ): 
-    ViennaCLSolverIteratif(preconditioner),
-    _custom_tag(new viennacl::linalg::bicgstab_tag( static_cast<double>(parameters("krylov_solver")["relative_tolerance"]),
-						    static_cast<int>(parameters("krylov_solver")["maximum_iterations"]),
-						    static_cast<int>(parameters("krylov_solver")["restart"]) ))
-  {};
+  void ViennaCLSolverIterBiCGStab::set(Parameters& param)
+  {
+    // Set the solver tag
+    _custom_tag.reset(new viennacl::linalg::bicgstab_tag( static_cast<double>(param["relative_tolerance"]),
+							  static_cast<int>(param["maximum_iterations"]),
+							  static_cast<int>(param["restart"]) ));
+  };
   //-----------------------------------------------------------------------------
 
   ublas_vector   
@@ -77,15 +80,15 @@ namespace dolfin
   {
     return _preconditioner->solve(A, b, *this);
   };
-  //-----------------------------------------------------------------------------
+ //-----------------------------------------------------------------------------
 
-  ViennaCLSolverIterGMRES::ViennaCLSolverIterGMRES( std::string preconditioner ): 
-    ViennaCLSolverIteratif(preconditioner),
-    _custom_tag(new viennacl::linalg::gmres_tag(/* static_cast<double>(parameters("krylov_solver")["relative_tolerance"]),
-						 static_cast<int>(parameters("krylov_solver")["maximum_iterations"]),
-						 static_cast<int>(parameters("krylov_solver")["restart"]) */))
-
-  {};
+  void ViennaCLSolverIterGMRES::set(Parameters& param)
+  {
+    // Set the solver tag
+    _custom_tag.reset(new viennacl::linalg::gmres_tag( static_cast<double>(param["relative_tolerance"]),
+						       static_cast<int>(param["maximum_iterations"]),
+						       static_cast<int>(param["restart"]) ));
+  };
  //-----------------------------------------------------------------------------
 
   ublas_vector   

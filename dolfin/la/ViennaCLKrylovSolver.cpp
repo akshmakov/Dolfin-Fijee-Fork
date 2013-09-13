@@ -129,9 +129,8 @@ std::size_t ViennaCLKrylovSolver::solve(GenericVector& x, const GenericVector& b
 	  x.zero();
 	}
       
-//   // Read parameters if not done
-//   read_parameters();
-      //
+    std::cout << static_cast<int>(parameters["maximum_iterations"]) << std::endl;
+    _solver->set(parameters);
       // Write a message
       if (report)
 	info("Solving linear system of size %d x %d (ViennaCL Krylov solver).", M, N);

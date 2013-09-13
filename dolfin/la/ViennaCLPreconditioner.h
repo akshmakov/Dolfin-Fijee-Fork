@@ -154,8 +154,6 @@ namespace dolfin
     {
       return viennacl::linalg::solve(A, b, solver.get_tag());
     };
-
-  private:
   };
   //-----------------------------------------------------------------------------
 
@@ -219,7 +217,6 @@ namespace dolfin
       //
       return viennacl::linalg::solve(A, b, solver.get_tag(), precond);
     };
-  private:
   };
   //-----------------------------------------------------------------------------
  
