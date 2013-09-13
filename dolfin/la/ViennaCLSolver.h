@@ -51,7 +51,7 @@ namespace dolfin
     
     /// Destructor
     virtual
-      ~ViennaCLSolver() = 0;
+      ~ViennaCLSolver(){/* Do nothing */};
     
     /// Solver
     virtual 

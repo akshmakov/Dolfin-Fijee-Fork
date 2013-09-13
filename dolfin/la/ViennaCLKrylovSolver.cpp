@@ -137,14 +137,15 @@ std::size_t ViennaCLKrylovSolver::solve(GenericVector& x, const GenericVector& b
 	info("Solving linear system of size %d x %d (ViennaCL Krylov solver).", M, N);
 
       // solver
-      bool converged = false;
+      // FIXME FIND THE CONVERGE RATIO
+      bool converged = true /* false*/;
       std::size_t iterations = 0;
       // Pull the uBLAS matrix ; solve ; save the solution in x
-      ublas_sparse_matrix uBLAS_A = ( as_type< const uBLASMatrix< ublas_sparse_matrix > >(*_A) ).mat();
-      ublas_vector        uBLAS_b = ( as_type< const uBLASVector >(b) ).vec();
-      boost::shared_ptr< ublas_vector > ptr_uBLAS_x;
-      *ptr_uBLAS_x = _solver->solve( uBLAS_A, uBLAS_b );
-      x = uBLASVector( ptr_uBLAS_x );
+      ublas_vector*   ptr_uBLAS_x = new ublas_vector();
+      *ptr_uBLAS_x = _solver->solve( ( as_type< const uBLASMatrix< ublas_sparse_matrix > >(*_A) ).mat(), 
+				     ( as_type< const uBLASVector >(b) ).vec() );
+      boost::shared_ptr< ublas_vector > shared_ptr_uBLAS_x(ptr_uBLAS_x);
+      x = uBLASVector( shared_ptr_uBLAS_x );
       iterations = _solver->number_iteration();
     
       // Check for convergence
