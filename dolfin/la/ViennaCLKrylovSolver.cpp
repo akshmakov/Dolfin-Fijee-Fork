@@ -99,8 +99,8 @@ ViennaCLKrylovSolver::ViennaCLKrylovSolver(std::string method,
 // }
 //-----------------------------------------------------------------------------
 ViennaCLKrylovSolver::~ViennaCLKrylovSolver()
-{
-  // Do nothing
+{ 
+  // Do nothing 
 }
 //-----------------------------------------------------------------------------
 std::size_t ViennaCLKrylovSolver::solve(GenericVector& x, const GenericVector& b)
@@ -194,7 +194,8 @@ void ViennaCLKrylovSolver::read_parameters()
   atol    = parameters["absolute_tolerance"];
   div_tol = parameters["divergence_limit"];
   max_it  = parameters["maximum_iterations"];
-  restart = parameters("gmres")["restart"];
+  // TODO
+  //  restart = parameters("gmres")["restart"];
   report  = parameters["report"];
 }
 //-----------------------------------------------------------------------------

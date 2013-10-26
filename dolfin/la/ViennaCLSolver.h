@@ -37,6 +37,7 @@
 #include <boost/shared_ptr.hpp>
 #include <dolfin/common/Variable.h>
 #include <dolfin/parameter/Parameters.h>
+#include "KrylovSolver.h"
 
 
 namespace dolfin

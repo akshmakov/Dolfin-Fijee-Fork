@@ -42,8 +42,8 @@ namespace dolfin
       _preconditioner.reset( new ViennaCLPreconditionerILU0(preconditioner) );
     else if ( preconditioner == "block_ilu")
       _preconditioner.reset( new ViennaCLPreconditionerBlockILU(preconditioner) );
-    else if ( preconditioner == "block_ilu")
-      _preconditioner.reset( new ViennaCLPreconditionerBlockILU(preconditioner) );
+    else if ( preconditioner == "jacobi")
+      _preconditioner.reset( new ViennaCLPreconditionerJacobi(preconditioner) );
     else
       dolfin_error("ViennaCLSolver.cpp",
 		   "create ViennaCL preconditioner",
@@ -70,8 +70,7 @@ namespace dolfin
   {
     // Set the solver tag
     _custom_tag.reset(new viennacl::linalg::bicgstab_tag( static_cast<double>(param["relative_tolerance"]),
-							  static_cast<int>(param["maximum_iterations"]),
-							  static_cast<int>(param["restart"]) ));
+							  static_cast<int>(param["maximum_iterations"]) ));
   };
   //-----------------------------------------------------------------------------
 
@@ -87,7 +86,7 @@ namespace dolfin
     // Set the solver tag
     _custom_tag.reset(new viennacl::linalg::gmres_tag( static_cast<double>(param["relative_tolerance"]),
 						       static_cast<int>(param["maximum_iterations"]),
-						       static_cast<int>(param["restart"]) ));
+						       static_cast<int>(param("gmres")["restart"]) ));
   };
  //-----------------------------------------------------------------------------
 

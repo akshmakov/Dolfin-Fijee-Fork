@@ -41,9 +41,9 @@ namespace dolfin
     ("none",        1)
     ("ilut",        2)
     ("ilu0",        3)
-    ("block_ilu0",  4)
-    /*("jacobi",      5)
-      ("row_scaling", 6)*/;
+    ("block_ilu",   4)
+    ("jacobi",      5)
+    /*  ("row_scaling", 6)*/;
 
   // Mapping from preconditioner string to description string
   const std::vector<std::pair<std::string, std::string> >
@@ -53,9 +53,9 @@ namespace dolfin
     ("none",             "No preconditioner")
     ("ilut",             "Incomplete LU factorization with Threshold")
     ("ilu0",             "Incomplete LU factorization with Static Pattern")
-    ("block_ilu0",       "Incomplete LU factorization with Static Pattern parallel variant")
-    /*("jacobi",           "Jacobi preconditioner")
-      ("row_scaling",      "Simple diagonal preconditioner given by the reciprocals of the norms of the rows of the system matrix")*/;
+    ("block_ilu",        "Incomplete LU factorization with Static Pattern parallel variant")
+    ("jacobi",           "Jacobi preconditioner")
+    /* ("row_scaling",      "Simple diagonal preconditioner given by the reciprocals of the norms of the rows of the system matrix")*/;
 
   //-----------------------------------------------------------------------------
   std::vector<std::pair<std::string, std::string> >
