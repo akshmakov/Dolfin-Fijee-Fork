@@ -112,7 +112,7 @@ namespace dolfin
     virtual 
       void set(Parameters& ) = 0;
 
-    /// Number of iteration
+   /// Number of iteration
     virtual 
       std::size_t number_iteration() = 0;
 
@@ -145,7 +145,7 @@ namespace dolfin
     /// Number of iteration
     virtual 
       std::size_t number_iteration(){ return _custom_tag->iters();};
-
+    
     /// Returun solver tag
     viennacl::linalg::cg_tag& get_tag() const {return *_custom_tag;};
 

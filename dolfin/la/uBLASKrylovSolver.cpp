@@ -47,6 +47,12 @@ uBLASKrylovSolver::preconditioners()
   return boost::assign::pair_list_of
     ("default", "default preconditioner")
     ("none",    "No preconditioner")
+#ifdef HAS_VIENNACL
+    ("ilut",             "Incomplete LU factorization with Threshold")
+    ("ilu0",             "Incomplete LU factorization with Static Pattern")
+    ("block_ilu",        "Incomplete LU factorization with Static Pattern parallel variant")
+    ("jacobi",           "Jacobi preconditioner")
+#endif
     ("ilu",     "Incomplete LU factorization");
 }
 //-----------------------------------------------------------------------------

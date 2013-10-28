@@ -40,7 +40,6 @@
 #include <dolfin/common/Variable.h>
 #include <dolfin/parameter/Parameters.h>
 #include "GenericPreconditioner.h"
-//#include "ViennaCLKrylovSolver.h"
 #include "ViennaCLSolver.h"
 #include <dolfin/log/log.h>
 
@@ -133,28 +132,19 @@ namespace dolfin
     };
 
     /// Solver
-    virtual 
-      ublas_vector solve( const ublas_sparse_matrix& A, const ublas_vector& b, 
-			  const ViennaCLSolverIterCG& solver)
-    {
-      return viennacl::linalg::solve(A, b, solver.get_tag());
-    };
+    virtual ublas_vector solve( const ublas_sparse_matrix& A, 
+				const ublas_vector& b, 
+				const ViennaCLSolverIterCG& solver);
  
     /// Solver
-    virtual 
-      ublas_vector solve( const ublas_sparse_matrix& A, const ublas_vector& b, 
-			  const ViennaCLSolverIterBiCGStab& solver)
-    {
-      return viennacl::linalg::solve(A, b, solver.get_tag());
-    };
+    virtual  ublas_vector solve( const ublas_sparse_matrix& A, 
+				 const ublas_vector& b, 
+				 const ViennaCLSolverIterBiCGStab& solver);
 
     /// Solver
-    virtual 
-      ublas_vector solve( const ublas_sparse_matrix& A, const ublas_vector& b, 
-			  const ViennaCLSolverIterGMRES& solver)
-    {
-      return viennacl::linalg::solve(A, b, solver.get_tag());
-    };
+    virtual ublas_vector solve( const ublas_sparse_matrix& A, 
+				const ublas_vector& b, 
+				const ViennaCLSolverIterGMRES& solver);
   };
   //-----------------------------------------------------------------------------
 
@@ -192,32 +182,17 @@ namespace dolfin
     /// Solver
     virtual 
       ublas_vector solve( const ublas_sparse_matrix& A, const ublas_vector& b, 
-			  const ViennaCLSolverIterCG& solver)
-    {
-      viennacl::linalg::ilut_precond< ublas_sparse_matrix > precond(A, viennacl::linalg::ilut_tag());
-      //
-      return viennacl::linalg::solve(A, b, solver.get_tag(), precond);
-    };
+			  const ViennaCLSolverIterCG& solver);
 
     /// Solver
     virtual 
       ublas_vector solve( const ublas_sparse_matrix& A, const ublas_vector& b, 
-			  const ViennaCLSolverIterBiCGStab& solver)
-    {
-      viennacl::linalg::ilut_precond< ublas_sparse_matrix > precond(A, viennacl::linalg::ilut_tag());
-      //
-      return viennacl::linalg::solve(A, b, solver.get_tag(), precond);
-    };
+			  const ViennaCLSolverIterBiCGStab& solver);
  
     /// Solver
     virtual 
       ublas_vector solve( const ublas_sparse_matrix& A, const ublas_vector& b, 
-			  const ViennaCLSolverIterGMRES& solver)
-    {
-      viennacl::linalg::ilut_precond< ublas_sparse_matrix > precond(A, viennacl::linalg::ilut_tag());
-      //
-      return viennacl::linalg::solve(A, b, solver.get_tag(), precond);
-    };
+			  const ViennaCLSolverIterGMRES& solver);
   };
   //-----------------------------------------------------------------------------
  
@@ -253,34 +228,19 @@ namespace dolfin
     };
 
     /// Solver
-    virtual 
-      ublas_vector solve( const ublas_sparse_matrix& A, const ublas_vector& b, 
-			  const ViennaCLSolverIterCG& solver)
-    {
-      viennacl::linalg::ilu0_precond< ublas_sparse_matrix > precond(A, viennacl::linalg::ilu0_tag());
-      //
-      return viennacl::linalg::solve(A, b, solver.get_tag(), precond);
-    };
+    virtual ublas_vector solve( const ublas_sparse_matrix& A, 
+				const ublas_vector& b, 
+				const ViennaCLSolverIterCG& solver);
  
     /// Solver
-    virtual 
-      ublas_vector solve( const ublas_sparse_matrix& A, const ublas_vector& b, 
-			  const ViennaCLSolverIterBiCGStab& solver)
-    {
-      viennacl::linalg::ilu0_precond< ublas_sparse_matrix > precond(A, viennacl::linalg::ilu0_tag());
-      //
-      return viennacl::linalg::solve(A, b, solver.get_tag(), precond);
-    };
+    virtual ublas_vector solve( const ublas_sparse_matrix& A, 
+				const ublas_vector& b, 
+				const ViennaCLSolverIterBiCGStab& solver);
 
     /// Solver
-    virtual 
-      ublas_vector solve( const ublas_sparse_matrix& A, const ublas_vector& b, 
-			  const ViennaCLSolverIterGMRES& solver)
-    {
-      viennacl::linalg::ilu0_precond< ublas_sparse_matrix > precond(A, viennacl::linalg::ilu0_tag());
-      //
-      return viennacl::linalg::solve(A, b, solver.get_tag(), precond);
-    };
+    virtual ublas_vector solve( const ublas_sparse_matrix& A, 
+				const ublas_vector& b, 
+				const ViennaCLSolverIterGMRES& solver);
   };
   //-----------------------------------------------------------------------------
  
@@ -317,37 +277,19 @@ namespace dolfin
     };
 
     /// Solver
-    virtual 
-      ublas_vector solve( const ublas_sparse_matrix& A, const ublas_vector& b, 
-			  const ViennaCLSolverIterCG& solver)
-    {
-      viennacl::linalg::block_ilu_precond< ublas_sparse_matrix, viennacl::linalg::ilu0_tag> 
-	precond(A, viennacl::linalg::ilu0_tag());
-      //
-      return viennacl::linalg::solve(A, b, solver.get_tag(), precond);
-    };
+    virtual ublas_vector solve( const ublas_sparse_matrix& A, 
+				const ublas_vector& b, 
+				const ViennaCLSolverIterCG& solver);
 
     /// Solver
-    virtual 
-      ublas_vector solve( const ublas_sparse_matrix& A, const ublas_vector& b, 
-			  const ViennaCLSolverIterBiCGStab& solver)
-    {
-      viennacl::linalg::block_ilu_precond< ublas_sparse_matrix, viennacl::linalg::ilu0_tag> 
-	precond(A, viennacl::linalg::ilu0_tag());
-      //
-      return viennacl::linalg::solve(A, b, solver.get_tag(), precond);
-    };
+    virtual ublas_vector solve( const ublas_sparse_matrix& A, 
+				const ublas_vector& b, 
+				const ViennaCLSolverIterBiCGStab& solver);
 
     /// Solver
-    virtual 
-      ublas_vector solve( const ublas_sparse_matrix& A, const ublas_vector& b, 
-			  const ViennaCLSolverIterGMRES& solver)
-    {
-      viennacl::linalg::block_ilu_precond< ublas_sparse_matrix, viennacl::linalg::ilu0_tag> 
-	precond(A, viennacl::linalg::ilu0_tag());
-      //
-      return viennacl::linalg::solve(A, b, solver.get_tag(), precond);
-    };
+    virtual ublas_vector solve( const ublas_sparse_matrix& A, 
+				const ublas_vector& b, 
+				const ViennaCLSolverIterGMRES& solver);
   };
   //-----------------------------------------------------------------------------
  
@@ -384,34 +326,19 @@ namespace dolfin
     };
 
     /// Solver
-    virtual 
-      ublas_vector solve( const ublas_sparse_matrix& A, const ublas_vector& b, 
-			  const ViennaCLSolverIterCG& solver)
-    {
-      viennacl::linalg::jacobi_precond< ublas_sparse_matrix > precond(A, viennacl::linalg::jacobi_tag());
-      //
-      return viennacl::linalg::solve(A, b, solver.get_tag(), precond);
-    };
+    virtual ublas_vector solve( const ublas_sparse_matrix& A, 
+				const ublas_vector& b, 
+				const ViennaCLSolverIterCG& solver);
 
     /// Solver
-    virtual 
-      ublas_vector solve( const ublas_sparse_matrix& A, const ublas_vector& b, 
-			  const ViennaCLSolverIterBiCGStab& solver)
-    {
-      viennacl::linalg::jacobi_precond< ublas_sparse_matrix > precond(A, viennacl::linalg::jacobi_tag());
-      //
-      return viennacl::linalg::solve(A, b, solver.get_tag(), precond);
-    };
+    virtual ublas_vector solve( const ublas_sparse_matrix& A, 
+				const ublas_vector& b, 
+				const ViennaCLSolverIterBiCGStab& solver);
 
     /// Solver
-    virtual 
-      ublas_vector solve( const ublas_sparse_matrix& A, const ublas_vector& b, 
-			  const ViennaCLSolverIterGMRES& solver)
-    {
-      viennacl::linalg::jacobi_precond< ublas_sparse_matrix > precond(A, viennacl::linalg::jacobi_tag());
-      //
-      return viennacl::linalg::solve(A, b, solver.get_tag(), precond);
-    };
+    virtual ublas_vector solve( const ublas_sparse_matrix& A, 
+				const ublas_vector& b, 
+				const ViennaCLSolverIterGMRES& solver);
   };
 }
 
