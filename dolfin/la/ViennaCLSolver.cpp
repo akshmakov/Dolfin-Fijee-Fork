@@ -40,10 +40,14 @@ namespace dolfin
       _preconditioner.reset( new ViennaCLPreconditionerILUT(preconditioner) );
     else if ( preconditioner == "ilu0")
       _preconditioner.reset( new ViennaCLPreconditionerILU0(preconditioner) );
-    else if ( preconditioner == "block_ilu")
-      _preconditioner.reset( new ViennaCLPreconditionerBlockILU(preconditioner) );
+    else if ( preconditioner == "block_ilu0")
+      _preconditioner.reset( new ViennaCLPreconditionerBlockILU0(preconditioner) );
+    else if ( preconditioner == "block_ilut")
+      _preconditioner.reset( new ViennaCLPreconditionerBlockILUT(preconditioner) );
     else if ( preconditioner == "jacobi")
       _preconditioner.reset( new ViennaCLPreconditionerJacobi(preconditioner) );
+    else if ( preconditioner == "row_scaling")
+      _preconditioner.reset( new ViennaCLPreconditionerRowScaling(preconditioner) );
     else
       dolfin_error("ViennaCLSolver.cpp",
 		   "create ViennaCL preconditioner",

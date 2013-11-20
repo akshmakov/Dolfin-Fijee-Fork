@@ -50,8 +50,10 @@ uBLASKrylovSolver::preconditioners()
 #ifdef HAS_VIENNACL
     ("ilut",             "Incomplete LU factorization with Threshold")
     ("ilu0",             "Incomplete LU factorization with Static Pattern")
-    ("block_ilu",        "Incomplete LU factorization with Static Pattern parallel variant")
+    ("block_ilut",       "Incomplete LU factorization with Threshold parallel variant apply to diagonal blocks")
+    ("block_ilu0",       "Incomplete LU factorization with Static Pattern parallel variant apply to diagonal blocks")
     ("jacobi",           "Jacobi preconditioner")
+    ("row_scaling",      "Simple diagonal preconditioner given by the reciprocals of the norms of the rows of the system matrix")
 #endif
     ("ilu",     "Incomplete LU factorization");
 }

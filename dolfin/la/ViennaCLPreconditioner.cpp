@@ -43,7 +43,7 @@ namespace dolfin
     ("ilu0",        3)
     ("block_ilu",   4)
     ("jacobi",      5)
-    /*  ("row_scaling", 6)*/;
+    ("row_scaling", 6);
 
   // Mapping from preconditioner string to description string
   const std::vector<std::pair<std::string, std::string> >
@@ -55,7 +55,7 @@ namespace dolfin
     ("ilu0",             "Incomplete LU factorization with Static Pattern")
     ("block_ilu",        "Incomplete LU factorization with Static Pattern parallel variant")
     ("jacobi",           "Jacobi preconditioner")
-    /* ("row_scaling",      "Simple diagonal preconditioner given by the reciprocals of the norms of the rows of the system matrix")*/;
+    ("row_scaling",      "Simple diagonal preconditioner given by the reciprocals of the norms of the rows of the system matrix");
 
   //-----------------------------------------------------------------------------
   std::vector<std::pair<std::string, std::string> >
@@ -110,8 +110,8 @@ namespace dolfin
     // solution
     ublas_vector X;
     //
-    
-#ifdef VIENNACL_WITH_OPENCL
+
+#if defined(VIENNACL_WITH_OPENCL) || defined(VIENNACL_WITH_OPENMP)    
     // Move data on OpenCL devices
     viennacl::vector<double> vcl_b( b.size() );
     viennacl::compressed_matrix<double> vcl_A( A.size1(),
@@ -147,7 +147,7 @@ namespace dolfin
     ublas_vector X;
     //
     
-#ifdef VIENNACL_WITH_OPENCL
+#if defined(VIENNACL_WITH_OPENCL) || defined(VIENNACL_WITH_OPENMP)
     // Move data on OpenCL devices
     viennacl::vector<double> vcl_b( b.size() );
     viennacl::compressed_matrix<double> vcl_A( A.size1(),
@@ -183,7 +183,7 @@ namespace dolfin
     ublas_vector X;
     //
     
-#ifdef VIENNACL_WITH_OPENCL
+#if defined(VIENNACL_WITH_OPENCL) || defined(VIENNACL_WITH_OPENMP)
     // Move data on OpenCL devices
     viennacl::vector<double> vcl_b( b.size() );
     viennacl::compressed_matrix<double> vcl_A( A.size1(),
@@ -219,7 +219,7 @@ namespace dolfin
     ublas_vector X;
     //
     
-#ifdef VIENNACL_WITH_OPENCL
+#if defined(VIENNACL_WITH_OPENCL) || defined(VIENNACL_WITH_OPENMP)
     // Move data on OpenCL devices
     viennacl::vector<double> vcl_b( b.size() );
     viennacl::compressed_matrix<double> vcl_A( A.size1(),
@@ -260,7 +260,7 @@ namespace dolfin
     ublas_vector X;
     //
     
-#ifdef VIENNACL_WITH_OPENCL
+#if defined(VIENNACL_WITH_OPENCL) || defined(VIENNACL_WITH_OPENMP)
     // Move data on OpenCL devices
     viennacl::vector<double> vcl_b( b.size() );
     viennacl::compressed_matrix<double> vcl_A( A.size1(),
@@ -301,7 +301,7 @@ namespace dolfin
     ublas_vector X;
     //
     
-#ifdef VIENNACL_WITH_OPENCL
+#if defined(VIENNACL_WITH_OPENCL) || defined(VIENNACL_WITH_OPENMP)
     // Move data on OpenCL devices
     viennacl::vector<double> vcl_b( b.size() );
     viennacl::compressed_matrix<double> vcl_A( A.size1(),
@@ -342,7 +342,7 @@ namespace dolfin
     ublas_vector X;
     //
     
-#ifdef VIENNACL_WITH_OPENCL
+#if defined(VIENNACL_WITH_OPENCL) || defined(VIENNACL_WITH_OPENMP)
     // Move data on OpenCL devices
     viennacl::vector<double> vcl_b( b.size() );
     viennacl::compressed_matrix<double> vcl_A( A.size1(),
@@ -383,7 +383,7 @@ namespace dolfin
     ublas_vector X;
     //
     
-#ifdef VIENNACL_WITH_OPENCL
+#if defined(VIENNACL_WITH_OPENCL) || defined(VIENNACL_WITH_OPENMP)
     // Move data on OpenCL devices
     viennacl::vector<double> vcl_b( b.size() );
     viennacl::compressed_matrix<double> vcl_A( A.size1(),
@@ -424,7 +424,7 @@ namespace dolfin
     ublas_vector X;
     //
     
-#ifdef VIENNACL_WITH_OPENCL
+#if defined(VIENNACL_WITH_OPENCL) || defined(VIENNACL_WITH_OPENMP)
     // Move data on OpenCL devices
     viennacl::vector<double> vcl_b( b.size() );
     viennacl::compressed_matrix<double> vcl_A( A.size1(),
@@ -454,9 +454,9 @@ namespace dolfin
   };
   //-----------------------------------------------------------------------------
   ublas_vector
-  ViennaCLPreconditionerBlockILU::solve(const ublas_sparse_matrix& A, 
-					const ublas_vector& b, 
-					const ViennaCLSolverIterCG& solver)
+  ViennaCLPreconditionerBlockILUT::solve(const ublas_sparse_matrix& A, 
+					 const ublas_vector& b, 
+					 const ViennaCLSolverIterCG& solver)
   {
     //
     // Solve AX = b
@@ -465,7 +465,133 @@ namespace dolfin
     ublas_vector X;
     //
     
-#ifdef VIENNACL_WITH_OPENCL
+#if defined(VIENNACL_WITH_OPENCL) || defined(VIENNACL_WITH_OPENMP)
+    // Move data on OpenCL devices
+    viennacl::vector<double> vcl_b( b.size() );
+    viennacl::compressed_matrix<double> vcl_A( A.size1(),
+					       A.size2() );
+    //
+    viennacl::copy(A, vcl_A);
+    viennacl::copy(b, vcl_b);
+    
+    //
+    viennacl::linalg::block_ilu_precond< viennacl::compressed_matrix<double>, viennacl::linalg::ilut_tag> 
+      precond(vcl_A, viennacl::linalg::ilut_tag());
+    //
+    viennacl::vector<double> vcl_X = viennacl::linalg::solve(vcl_A, vcl_b, solver.get_tag(), precond);
+    
+    // Move data back to the host
+    X.resize( vcl_b.size() );
+    viennacl::copy(vcl_X, X);
+#else
+    //
+    viennacl::linalg::block_ilu_precond< ublas_sparse_matrix, viennacl::linalg::ilut_tag> 
+      precond(A, viennacl::linalg::ilut_tag());
+    //
+    X = viennacl::linalg::solve(A, b, solver.get_tag(), precond);
+#endif      
+    
+    //
+    return X; 
+  };
+  //-----------------------------------------------------------------------------
+  ublas_vector
+  ViennaCLPreconditionerBlockILUT::solve(const ublas_sparse_matrix& A, 
+					 const ublas_vector& b, 
+					 const ViennaCLSolverIterBiCGStab& solver)
+  {
+    //
+    // Solve AX = b
+    
+    // solution
+    ublas_vector X;
+    //
+    
+#if defined(VIENNACL_WITH_OPENCL) || defined(VIENNACL_WITH_OPENMP)
+    // Move data on OpenCL devices
+    viennacl::vector<double> vcl_b( b.size() );
+    viennacl::compressed_matrix<double> vcl_A( A.size1(),
+					       A.size2() );
+    //
+    viennacl::copy(A, vcl_A);
+    viennacl::copy(b, vcl_b);
+    
+    //
+    viennacl::linalg::block_ilu_precond< viennacl::compressed_matrix<double>, viennacl::linalg::ilut_tag> 
+      precond(vcl_A, viennacl::linalg::ilut_tag());
+    //
+    viennacl::vector<double> vcl_X = viennacl::linalg::solve(vcl_A, vcl_b, solver.get_tag(), precond);
+    
+    // Move data back to the host
+    X.resize( vcl_b.size() );
+    viennacl::copy(vcl_X, X);
+#else
+    //
+    viennacl::linalg::block_ilu_precond< ublas_sparse_matrix, viennacl::linalg::ilut_tag> 
+      precond(A, viennacl::linalg::ilut_tag());
+    //
+    X = viennacl::linalg::solve(A, b, solver.get_tag(), precond);
+#endif      
+    
+    //
+    return X; 
+  };
+  //-----------------------------------------------------------------------------
+  ublas_vector
+  ViennaCLPreconditionerBlockILUT::solve(const ublas_sparse_matrix& A, 
+					 const ublas_vector& b, 
+					 const ViennaCLSolverIterGMRES& solver)
+  {
+    //
+    // Solve AX = b
+    
+    // solution
+    ublas_vector X;
+    //
+    
+#if defined(VIENNACL_WITH_OPENCL) || defined(VIENNACL_WITH_OPENMP)
+    // Move data on OpenCL devices
+    viennacl::vector<double> vcl_b( b.size() );
+    viennacl::compressed_matrix<double> vcl_A( A.size1(),
+					       A.size2() );
+    //
+    viennacl::copy(A, vcl_A);
+    viennacl::copy(b, vcl_b);
+    
+    //
+    viennacl::linalg::block_ilu_precond< viennacl::compressed_matrix<double>, viennacl::linalg::ilut_tag> 
+      precond(vcl_A, viennacl::linalg::ilut_tag());
+    //
+    viennacl::vector<double> vcl_X = viennacl::linalg::solve(vcl_A, vcl_b, solver.get_tag(), precond);
+    
+    // Move data back to the host
+    X.resize( vcl_b.size() );
+    viennacl::copy(vcl_X, X);
+#else
+    //
+    viennacl::linalg::block_ilu_precond< ublas_sparse_matrix, viennacl::linalg::ilut_tag> 
+      precond(A, viennacl::linalg::ilut_tag());
+    //
+    X = viennacl::linalg::solve(A, b, solver.get_tag(), precond);
+#endif      
+    
+    //
+    return X; 
+  };
+  //-----------------------------------------------------------------------------
+  ublas_vector
+  ViennaCLPreconditionerBlockILU0::solve(const ublas_sparse_matrix& A, 
+					 const ublas_vector& b, 
+					 const ViennaCLSolverIterCG& solver)
+  {
+    //
+    // Solve AX = b
+    
+    // solution
+    ublas_vector X;
+    //
+    
+#if defined(VIENNACL_WITH_OPENCL) || defined(VIENNACL_WITH_OPENMP)
     // Move data on OpenCL devices
     viennacl::vector<double> vcl_b( b.size() );
     viennacl::compressed_matrix<double> vcl_A( A.size1(),
@@ -496,9 +622,9 @@ namespace dolfin
   };
   //-----------------------------------------------------------------------------
   ublas_vector
-  ViennaCLPreconditionerBlockILU::solve(const ublas_sparse_matrix& A, 
-					const ublas_vector& b, 
-					const ViennaCLSolverIterBiCGStab& solver)
+  ViennaCLPreconditionerBlockILU0::solve(const ublas_sparse_matrix& A, 
+					 const ublas_vector& b, 
+					 const ViennaCLSolverIterBiCGStab& solver)
   {
     //
     // Solve AX = b
@@ -507,7 +633,7 @@ namespace dolfin
     ublas_vector X;
     //
     
-#ifdef VIENNACL_WITH_OPENCL
+#if defined(VIENNACL_WITH_OPENCL) || defined(VIENNACL_WITH_OPENMP)
     // Move data on OpenCL devices
     viennacl::vector<double> vcl_b( b.size() );
     viennacl::compressed_matrix<double> vcl_A( A.size1(),
@@ -538,9 +664,9 @@ namespace dolfin
   };
   //-----------------------------------------------------------------------------
   ublas_vector
-  ViennaCLPreconditionerBlockILU::solve(const ublas_sparse_matrix& A, 
-					const ublas_vector& b, 
-					const ViennaCLSolverIterGMRES& solver)
+  ViennaCLPreconditionerBlockILU0::solve(const ublas_sparse_matrix& A, 
+					 const ublas_vector& b, 
+					 const ViennaCLSolverIterGMRES& solver)
   {
     //
     // Solve AX = b
@@ -549,7 +675,7 @@ namespace dolfin
     ublas_vector X;
     //
     
-#ifdef VIENNACL_WITH_OPENCL
+#if defined(VIENNACL_WITH_OPENCL) || defined(VIENNACL_WITH_OPENMP)
     // Move data on OpenCL devices
     viennacl::vector<double> vcl_b( b.size() );
     viennacl::compressed_matrix<double> vcl_A( A.size1(),
@@ -591,7 +717,7 @@ namespace dolfin
     ublas_vector X;
     //
     
-#ifdef VIENNACL_WITH_OPENCL
+#if defined(VIENNACL_WITH_OPENCL) || defined(VIENNACL_WITH_OPENMP)
     // Move data on OpenCL devices
     viennacl::vector<double> vcl_b( b.size() );
     viennacl::compressed_matrix<double> vcl_A( A.size1(),
@@ -632,7 +758,7 @@ namespace dolfin
     ublas_vector X;
     //
     
-#ifdef VIENNACL_WITH_OPENCL
+#if defined(VIENNACL_WITH_OPENCL) || defined(VIENNACL_WITH_OPENMP)
     // Move data on OpenCL devices
     viennacl::vector<double> vcl_b( b.size() );
     viennacl::compressed_matrix<double> vcl_A( A.size1(),
@@ -673,7 +799,7 @@ namespace dolfin
     ublas_vector X;
     //
     
-#ifdef VIENNACL_WITH_OPENCL
+#if defined(VIENNACL_WITH_OPENCL) || defined(VIENNACL_WITH_OPENMP)
     // Move data on OpenCL devices
     viennacl::vector<double> vcl_b( b.size() );
     viennacl::compressed_matrix<double> vcl_A( A.size1(),
@@ -694,6 +820,129 @@ namespace dolfin
 #else
     //
     viennacl::linalg::jacobi_precond< ublas_sparse_matrix > precond(A, viennacl::linalg::jacobi_tag());
+    //
+    X = viennacl::linalg::solve(A, b, solver.get_tag(), precond);
+#endif      
+    
+    //
+    return X; 
+  };
+  //-----------------------------------------------------------------------------
+  ublas_vector
+  ViennaCLPreconditionerRowScaling::solve(const ublas_sparse_matrix& A, 
+					  const ublas_vector& b, 
+					  const ViennaCLSolverIterCG& solver)
+  {
+    //
+    // Solve AX = b
+    
+    // solution
+    ublas_vector X;
+    //
+    
+#if defined(VIENNACL_WITH_OPENCL) || defined(VIENNACL_WITH_OPENMP)
+    // Move data on OpenCL devices
+    viennacl::vector<double> vcl_b( b.size() );
+    viennacl::compressed_matrix<double> vcl_A( A.size1(),
+					       A.size2() );
+    //
+    viennacl::copy(A, vcl_A);
+    viennacl::copy(b, vcl_b);
+
+    //
+    viennacl::linalg::row_scaling< viennacl::compressed_matrix<double> > 
+      precond(vcl_A, viennacl::linalg::row_scaling_tag());
+    //
+    viennacl::vector<double> vcl_X = viennacl::linalg::solve(vcl_A, vcl_b, solver.get_tag(), precond);
+    
+    // Move data back to the host
+    X.resize( vcl_b.size() );
+    viennacl::copy(vcl_X, X);
+#else
+    //
+    viennacl::linalg::row_scaling< ublas_sparse_matrix > precond(A, viennacl::linalg::row_scaling_tag());
+    //
+    X = viennacl::linalg::solve(A, b, solver.get_tag(), precond);
+#endif      
+    
+    //
+    return X; 
+  };
+  //-----------------------------------------------------------------------------
+  ublas_vector
+  ViennaCLPreconditionerRowScaling::solve(const ublas_sparse_matrix& A, 
+					  const ublas_vector& b, 
+					  const ViennaCLSolverIterBiCGStab& solver)
+  {
+    //
+    // Solve AX = b
+    
+    // solution
+    ublas_vector X;
+    //
+    
+#if defined(VIENNACL_WITH_OPENCL) || defined(VIENNACL_WITH_OPENMP)
+    // Move data on OpenCL devices
+    viennacl::vector<double> vcl_b( b.size() );
+    viennacl::compressed_matrix<double> vcl_A( A.size1(),
+					       A.size2() );
+    //
+    viennacl::copy(A, vcl_A);
+    viennacl::copy(b, vcl_b);
+    
+    //
+    viennacl::linalg::row_scaling< viennacl::compressed_matrix<double> > 
+      precond(vcl_A, viennacl::linalg::row_scaling_tag());
+    //
+    viennacl::vector<double> vcl_X = viennacl::linalg::solve(vcl_A, vcl_b, solver.get_tag(), precond);
+    
+    // Move data back to the host
+    X.resize( vcl_b.size() );
+    viennacl::copy(vcl_X, X);
+#else
+    //
+    viennacl::linalg::row_scaling< ublas_sparse_matrix > precond(A, viennacl::linalg::row_scaling_tag());
+    //
+    X = viennacl::linalg::solve(A, b, solver.get_tag(), precond);
+#endif      
+    
+    //
+    return X; 
+  };
+  //-----------------------------------------------------------------------------
+  ublas_vector
+  ViennaCLPreconditionerRowScaling::solve(const ublas_sparse_matrix& A, 
+					  const ublas_vector& b, 
+					  const ViennaCLSolverIterGMRES& solver)
+  {
+    //
+    // Solve AX = b
+    
+    // solution
+    ublas_vector X;
+    //
+    
+#if defined(VIENNACL_WITH_OPENCL) || defined(VIENNACL_WITH_OPENMP)
+    // Move data on OpenCL devices
+    viennacl::vector<double> vcl_b( b.size() );
+    viennacl::compressed_matrix<double> vcl_A( A.size1(),
+					       A.size2() );
+    //
+    viennacl::copy(A, vcl_A);
+    viennacl::copy(b, vcl_b);
+    
+    //
+    viennacl::linalg::row_scaling< viennacl::compressed_matrix<double> > 
+      precond(vcl_A, viennacl::linalg::row_scaling_tag());
+    //
+    viennacl::vector<double> vcl_X = viennacl::linalg::solve(vcl_A, vcl_b, solver.get_tag(), precond);
+    
+    // Move data back to the host
+    X.resize( vcl_b.size() );
+    viennacl::copy(vcl_X, X);
+#else
+    //
+    viennacl::linalg::row_scaling< ublas_sparse_matrix > precond(A, viennacl::linalg::row_scaling_tag());
     //
     X = viennacl::linalg::solve(A, b, solver.get_tag(), precond);
 #endif      
