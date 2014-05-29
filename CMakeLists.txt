@@ -290,7 +290,7 @@ find_package(Boost COMPONENTS ${DOLFIN_BOOST_COMPONENTS} REQUIRED)
 find_package(UFC 1.3.0 QUIET HINTS ${UFC_DIR})
 if (NOT UFC_FOUND)
   message(FATAL_ERROR "Could not find a configuration file for package UFC that is "
-    "compatible with requested version 1.3.0.\n"
+    "compatible with requested version 2.3.0.\n"
     "Set UFC_DIR to the directory containing a CMake configuration file for UFC.")
 else()
   message(STATUS "UFC version: ${UFC_VERSION_STRING}")
@@ -382,7 +382,7 @@ if (DOLFIN_ENABLE_PETSC)
 
   # Enable TAO from PETSc for PETSc verion > 3.4
   if ((PETSC_VERSION VERSION_GREATER 3.4.100) OR (DOLFIN_ENABLE_TAO))
-    set(PETSC_ENABLE_TAO TRUE)
+    set(PETSC_ENABLE_TAO FALSE)
   endif()
 
 endif()

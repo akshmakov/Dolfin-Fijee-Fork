@@ -61,14 +61,22 @@ namespace dolfin
     ~ViennaCLKrylovSolver();
 
     /// Solve the operator (matrix)
-    void set_operator(const boost::shared_ptr<const GenericLinearOperator> A)
+    virtual void set_operator( std::shared_ptr<const GenericLinearOperator> A)
     { set_operators(A, A); }
 
     /// Set operator (matrix) and preconditioner matrix
-    void set_operators(const boost::shared_ptr<const GenericLinearOperator> A,
-                       const boost::shared_ptr<const GenericLinearOperator> P)
+    virtual void set_operators( std::shared_ptr<const GenericLinearOperator> A,
+			        std::shared_ptr<const GenericLinearOperator> P)
     { _A = A; }
 
+    /// Set null space of the operator (matrix). This is used to solve
+    /// singular systems
+    virtual void set_nullspace(const VectorSpaceBasis& nullspace)
+    {
+      dolfin_error("ViennaCLKrylovSolver.h",
+                   "set nullspace for operator",
+                   "Not supported by current linear algebra solver backend");
+    }
 
     /// Return the operator (matrix)
     const GenericLinearOperator& get_operator() const
@@ -83,11 +91,41 @@ namespace dolfin
     }
 
     /// Solve linear system Ax = b and return number of iterations
-    std::size_t solve(GenericVector& x, const GenericVector& b);
+    virtual std::size_t solve(GenericVector& x, const GenericVector& b);
 
     /// Solve linear system Ax = b and return number of iterations
-    std::size_t solve(const GenericLinearOperator& A, GenericVector& x,
-                      const GenericVector& b);
+    virtual std::size_t solve(const GenericLinearOperator& A, GenericVector& x,
+			      const GenericVector& b);
+
+
+    /// Solve linear system A^Tx = b
+    virtual std::size_t solve_transpose(const GenericLinearOperator& A,
+                                        GenericVector& x,
+                                        const GenericVector& b)
+    {
+      dolfin_error("ViennaCLKrylovSolver.h",
+                   "solve linear system transpose",
+                   "Not supported by current linear algebra backend. Consider using solve_transpose(x, b)");
+      return 0;
+    }
+
+    /// Solve linear system A^Tx = b
+    virtual std::size_t solve_transpose(GenericVector& x,
+                                        const GenericVector& b)
+    {
+      dolfin_error("ViennaCLKrylovSolver.h",
+                   "solve linear system transpose",
+                   "Not supported by current linear algebra backend. Consider using solve_transpose(x, b)");
+      return 0;
+    }
+
+    // FIXME: This should not be needed. Need to cleanup linear solver
+    // name jungle: default, lu, iterative, direct, krylov, etc
+    /// Return parameter type: "krylov_solver" or "lu_solver"
+    virtual std::string parameter_type() const
+    {
+      return "default";
+    }
 
     /// Return a list of available solver methods
     static std::vector<std::pair<std::string, std::string> > methods();
@@ -122,10 +160,10 @@ namespace dolfin
     bool report;
 
     /// Operator (the matrix)
-    boost::shared_ptr<const GenericLinearOperator> _A;
+    std::shared_ptr<const GenericLinearOperator> _A;
 
    // Underlying solver strategy
-    boost::shared_ptr< ViennaCLSolver > _solver;
+    std::shared_ptr< ViennaCLSolver > _solver;
   };
 }
 

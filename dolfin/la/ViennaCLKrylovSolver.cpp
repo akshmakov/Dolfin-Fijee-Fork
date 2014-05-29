@@ -125,7 +125,8 @@ std::size_t ViennaCLKrylovSolver::solve(GenericVector& x, const GenericVector& b
       // Reinitialise x if necessary
       if (x.size() != b.size())
 	{
-	  x.resize(b.size());
+	  //	  x.resize(b.size());
+	  x.resize(b.mpi_comm(), b.local_range());
 	  x.zero();
 	}
       
@@ -143,7 +144,7 @@ std::size_t ViennaCLKrylovSolver::solve(GenericVector& x, const GenericVector& b
       ublas_vector*   ptr_uBLAS_x = new ublas_vector();
       *ptr_uBLAS_x = _solver->solve( ( as_type< const uBLASMatrix< ublas_sparse_matrix > >(*_A) ).mat(), 
 				     ( as_type< const uBLASVector >(b) ).vec() );
-      boost::shared_ptr< ublas_vector > shared_ptr_uBLAS_x(ptr_uBLAS_x);
+      std::shared_ptr< ublas_vector > shared_ptr_uBLAS_x(ptr_uBLAS_x);
       x = uBLASVector( shared_ptr_uBLAS_x );
       iterations = _solver->number_iteration();
     
@@ -178,7 +179,7 @@ std::size_t ViennaCLKrylovSolver::solve(const GenericLinearOperator& A,
 					const GenericVector& b)
 {
   // Set operator
-  boost::shared_ptr<const GenericLinearOperator> Atmp(&A, NoDeleter());
+  std::shared_ptr<const GenericLinearOperator> Atmp(&A, NoDeleter());
   set_operator(Atmp);
 
   return solve(as_type<uBLASVector>(x), as_type<const uBLASVector>(b));

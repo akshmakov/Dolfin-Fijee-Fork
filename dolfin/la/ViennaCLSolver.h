@@ -34,7 +34,7 @@
 
 #include "ublas.h"
 #include <dolfin/log/log.h>
-#include <boost/shared_ptr.hpp>
+//#include <boost/shared_ptr.hpp>
 #include <dolfin/common/Variable.h>
 #include <dolfin/parameter/Parameters.h>
 #include "KrylovSolver.h"
@@ -118,7 +118,7 @@ namespace dolfin
 
   protected:
     /// Underlying preconditioner strategy
-    boost::shared_ptr< ViennaCLPreconditioner > _preconditioner;
+    std::shared_ptr< ViennaCLPreconditioner > _preconditioner;
   };
   //-----------------------------------------------------------------------------
   
@@ -151,7 +151,7 @@ namespace dolfin
 
   private:
     /// Solver tag
-    boost::shared_ptr< viennacl::linalg::cg_tag > _custom_tag;
+    std::shared_ptr< viennacl::linalg::cg_tag > _custom_tag;
 
   };
   //-----------------------------------------------------------------------------
@@ -185,7 +185,7 @@ namespace dolfin
 
   private:
     /// Solver tag
-    boost::shared_ptr< viennacl::linalg::bicgstab_tag > _custom_tag;
+    std::shared_ptr< viennacl::linalg::bicgstab_tag > _custom_tag;
   };
   //-----------------------------------------------------------------------------
  
@@ -218,7 +218,7 @@ namespace dolfin
 
   private:
     /// Solver tag
-    boost::shared_ptr< viennacl::linalg::gmres_tag > _custom_tag;
+    std::shared_ptr< viennacl::linalg::gmres_tag > _custom_tag;
   };
 }
 //-----------------------------------------------------------------------------
